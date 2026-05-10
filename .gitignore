@@ -1,0 +1,38 @@
+# Data
+data/raw/
+data/processed/
+data/property.db
+data/chroma/
+*.parquet
+
+# Environment
+.env
+.venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+
+# MLflow
+mlruns/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Streamlit
+.streamlit/
