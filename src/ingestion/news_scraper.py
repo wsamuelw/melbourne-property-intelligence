@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Property news scraper.
 
 Scrapes real estate and property market news from RSS feeds

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """FastAPI application for Melbourne Property Intelligence.
 
 Provides REST endpoints for querying the property knowledge base,
@@ -6,6 +7,8 @@ viewing suburb statistics, and managing data ingestion.
 
 import logging
 from datetime import date
+
+from typing import Optional
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
@@ -43,11 +46,11 @@ class QueryResponse(BaseModel):
 class SuburbStatsResponse(BaseModel):
     suburb: str
     total_sales: int
-    avg_price: float | None = None
-    median_price: float | None = None
-    min_price: float | None = None
-    max_price: float | None = None
-    avg_distance_km: float | None = None
+    avg_price: Optional[float] = None
+    median_price: Optional[float] = None
+    min_price: Optional[float] = None
+    max_price: Optional[float] = None
+    avg_distance_km: Optional[float] = None
 
 
 class IngestRequest(BaseModel):

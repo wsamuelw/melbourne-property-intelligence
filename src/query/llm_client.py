@@ -1,3 +1,4 @@
+from __future__ import annotations
 """LLM client for text generation.
 
 Supports Claude API (Anthropic) and local Ollama as backends.
@@ -81,11 +82,24 @@ def get_llm_client() -> LLMClient:
 
     try:
         client = OllamaClient()
-        # Quick health check
+        # Quick health check — verify Ollama is running AND has the requested model
         import httpx
 
-        httpx.get(f"{client.base_url}/api/tags", timeout=5)
-        logger.info("Using Ollama at %s", client.base_url)
+        resp = httpx.get(f"{client.base_url}/api/tags", timeout=5)
+        resp.raise_for_status()
+        models = [m.get("name", "") for m in resp.json().get("models", [])]
+        if not models:
+            logger.info("Ollama running but no models installed — using fallback")
+            return FallbackClient()
+        # Check if the requested model is available
+        model_available = any(client.model in m for m in models)
+        if not model_available:
+            logger.info(
+                "Ollama model '%s' not found (available: %s) — using fallback",
+                client.model, models,
+            )
+            return FallbackClient()
+        logger.info("Using Ollama at %s (model: %s)", client.base_url, client.model)
         return client
     except Exception:
         logger.info("No LLM available — using fallback client")

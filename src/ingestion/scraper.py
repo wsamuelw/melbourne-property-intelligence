@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Melbourne auction results scraper.
 
 Scrapes property auction results from real estate listing sites,

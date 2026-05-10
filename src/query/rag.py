@@ -1,3 +1,4 @@
+from __future__ import annotations
 """RAG (Retrieval-Augmented Generation) pipeline.
 
 Retrieves relevant documents from the vector store and generates

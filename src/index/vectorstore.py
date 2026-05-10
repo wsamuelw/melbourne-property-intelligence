@@ -1,3 +1,4 @@
+from __future__ import annotations
 """ChromaDB vector store wrapper.
 
 Manages the lifecycle of the vector database: creating collections,

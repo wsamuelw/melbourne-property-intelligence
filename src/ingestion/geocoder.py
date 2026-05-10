@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Suburb geocoding and distance calculation.
 
 Enriches auction results with latitude/longitude coordinates

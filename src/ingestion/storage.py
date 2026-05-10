@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Data storage layer.
 
 Stores auction results in SQLite for structured queries
@@ -86,17 +87,23 @@ def store_auction_results(results: list[dict], db_path: Path | str | None = None
 
 
 def store_news_articles(articles: list[dict], db_path: Path | str | None = None):
-    """Store news articles in the database."""
+    """Store news articles in the database. Skips duplicates by URL."""
     engine = get_engine(db_path)
     SessionLocal = sessionmaker(bind=engine)
 
+    stored = 0
     with SessionLocal() as session:
         for article in articles:
+            # Skip if URL already exists
+            existing = session.query(NewsArticle).filter_by(url=article["url"]).first()
+            if existing:
+                continue
             db_article = NewsArticle(**article)
             session.add(db_article)
+            stored += 1
         session.commit()
 
-    logger.info("Stored %d news articles", len(articles))
+    logger.info("Stored %d new news articles (%d skipped as duplicates)", stored, len(articles) - stored)
 
 
 def export_to_parquet(db_path: Path | str | None = None, output_dir: str = "data/processed"):
@@ -123,7 +130,6 @@ def query_suburb_stats(suburb: str, db_path: Path | str | None = None) -> dict:
         SELECT
             COUNT(*) as total_sales,
             AVG(price_numeric) as avg_price,
-            MEDIAN(price_numeric) as median_price,
             MIN(price_numeric) as min_price,
             MAX(price_numeric) as max_price,
             AVG(distance_from_cbd_km) as avg_distance
@@ -139,10 +145,10 @@ def query_suburb_stats(suburb: str, db_path: Path | str | None = None) -> dict:
             "suburb": suburb,
             "total_sales": result[0],
             "avg_price": round(result[1], 2) if result[1] else None,
-            "median_price": round(result[2], 2) if result[2] else None,
-            "min_price": result[3],
-            "max_price": result[4],
-            "avg_distance_km": round(result[5], 1) if result[5] else None,
+            "median_price": None,
+            "min_price": result[2],
+            "max_price": result[3],
+            "avg_distance_km": round(result[4], 1) if result[4] else None,
         }
 
     return {"suburb": suburb, "total_sales": 0}

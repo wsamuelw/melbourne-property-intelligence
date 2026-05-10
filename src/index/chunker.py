@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Text chunking strategies for RAG.
 
 Splits documents into overlapping chunks suitable for embedding
